@@ -1,0 +1,21 @@
+{
+  "prepare_queue": {
+    "installed": [],
+    "uninstalled": []
+  },
+  "config_munge": {
+    "files": {}
+  },
+  "installed_plugins": {
+    "cordova-plugin-mqtt": {
+      "PACKAGE_NAME": "com.app.mqtt"
+    },
+    "cordova-plugin-speechrecognition": {
+      "PACKAGE_NAME": "com.app.mqtt"
+    },
+    "cordova-plugin-whitelist": {
+      "PACKAGE_NAME": "com.app.mqtt"
+    }
+  },
+  "dependent_plugins": {}
+}
