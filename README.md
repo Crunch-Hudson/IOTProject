@@ -1,8 +1,9 @@
 # # IOTProject
 
-IOTProject est une application Android développé en HTML/CSS/Javascript sous le framework CORDOVA 
-## Getting Started
+IOTProject est une application Android développé en HTML/CSS/Javascript sous le framework CORDOVA.
+Elle a pour but de géré la domotique chez moi. Elle communique par MQTT via un broker présent sur un RaspberryPi qui transmet les informations nécéssaires à des contrôleurs de type ESP8266. 
 
+## Getting Started
 
 ### Prerequisites
 
