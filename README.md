@@ -50,6 +50,17 @@ cordova build
 * [Webstorm](https://www.jetbrains.com/webstorm/) - IDE
 * [Cordova](https://cordova.apache.org/) - Framework de développement Mobile Hybrid
 
+## Android Features
+
+|Type                | Done |
+|--------------------| -----| 
+| MQTT Connection    |  X   | 
+| MQTT Publish       |  X   |        
+| MQTT Subscribe     |  X   |          
+| ESP8266            |  X   |           
+| Node-Red           |  X   |              
+| Speech Recognition |      |
+
 
 ## License
 
