@@ -14,7 +14,7 @@ var brokerPort = "";
 
 var app = {
     // Application Constructor
-    initialize: function() {
+    initialize: function () {
         this.bindEvents();
         //this.subscribeESPTopic();
     },
@@ -22,28 +22,28 @@ var app = {
     //
     // Bind any events that are required on startup. Common events are:
     // 'load', 'deviceready', 'offline', and 'online'.
-    bindEvents: function() {
+    bindEvents: function () {
         document.addEventListener('deviceready', this.onDeviceReady, false);
     },
     // deviceready Event Handler
     //
     // The scope of 'this' is the event. In order to call the 'receivedEvent'
     // function, we must explicitly call 'app.receivedEvent(...);'
-    onDeviceReady: function() {
+    onDeviceReady: function () {
         app.receivedEvent('deviceready');
         recognition = new SpeechRecognition();
-        recognition.onresult = function(event){
-            if (event.results.length > 0){
+        recognition.onresult = function (event) {
+            if (event.results.length > 0) {
                 var test1 = document.getElementById("speechButton");
                 test1.innerHTML = event.results[0][0].transcript;
             }
         };
     },
     // Update DOM on a Received Event
-    receivedEvent: function(id) {
+    receivedEvent: function (id) {
         console.log('Received Event: ' + id);
     },
-    append: function (id,s) {
+    append: function (id, s) {
         // it is just a string append function. Nothing to do with the MQTT functions
         var node = document.createElement("p");                 // Create a <li> node
         var textnode = document.createTextNode(s);         // Create a text node
@@ -52,17 +52,16 @@ var app = {
     }
 };
 
-
 /* Connection management */
-function startConnection(){
+function startConnection() {
     alert("touchend connect");
-    if (document.getElementById("brokerAddress").value.substr(0,6) != "tcp://")
-        document.getElementById("brokerAddress").value = "tcp://"+document.getElementById("brokerAddress").value;
-    cordova.plugins.CordovaMqTTPlugin.connect({
-        url:document.getElementById("brokerAddress").value,
-        port:document.getElementById("port").value,
-        clientId:document.getElementById("clientid").value,
-        success:function(s){
+    if (document.getElementById("brokerAddress").value.substr(0, 6) != "tcp://")
+        document.getElementById("brokerAddress").value = "tcp://" + document.getElementById("brokerAddress").value;
+    window.cordova.plugins.CordovaMqTTPlugin.connect({
+        url: document.getElementById("brokerAddress").value,
+        port: document.getElementById("port").value,
+        clientId: '',
+        success: function (s) {
             connect = true;
             console.log(JSON.stringify(s));
             document.getElementById("Connect").style.display = "none";
@@ -73,7 +72,7 @@ function startConnection(){
             alert("Connected !");
             //document.getElementById("activity").innerHTML += "--> Success: you are connected to, "+document.getElementById("url").value+":"+document.getElementById("port").value+"<br>"
         },
-        error:function(e){
+        error: function (e) {
             connect = false;
             //document.getElementById("activity").innerHTML += "--> Error: something is wrong,\n "+JSON.stringify(e)+"<br>";
             document.getElementById("Connect").style.display = "block";
@@ -82,7 +81,7 @@ function startConnection(){
             alert("err!! something is wrong. check the console")
             console.log(e);
         },
-        onConnectionLost:function (){
+        onConnectionLost: function () {
             connect = false;
             //document.getElementById("activity").innerHTML += "--> You got disconnected";
             document.getElementById("Connect").style.display = "block";
@@ -92,11 +91,11 @@ function startConnection(){
     alert("cordovaMqttPlugin connect end");
 }
 
-function endConnection(){
+function endConnection() {
     document.getElementById("Connect").style.display = "block";
     document.getElementById("Disconnect").style.display = "none";
     cordova.plugins.CordovaMqTTPlugin.disconnect({
-        success:function(s){
+        success: function (s) {
             connect = false;
             document.getElementById("Connect").style.display = "block";
             document.getElementById("Disconnect").style.display = "none";
@@ -105,7 +104,7 @@ function endConnection(){
             document.getElementById("connectionState").value = "Disconnected";
             //document.getElementById("activity").innerHTML += "--> Success: you are now disconnected"+"<br>"
         },
-        error:function(e){
+        error: function (e) {
             //document.getElementById("activity").innerHTML += "--> Error: something is wrong, "+e+"<br>";
             document.getElementById("Connect").style.display = "none";
             document.getElementById("Disconnect").style.display = "block";
@@ -116,19 +115,19 @@ function endConnection(){
 }
 
 /* MQTT function */
-function publishMessage(){
+function publishMessage() {
     if (!connect) {
         alert("First establish connection then try to publish")
     } else {
         cordova.plugins.CordovaMqTTPlugin.publish({
-            topic:document.getElementById("topic").value,
-            payload:document.getElementById("message").value,
-            qos:0,
-            retain:false,
-            success:function(s){
+            topic: document.getElementById("topic").value,
+            payload: document.getElementById("message").value,
+            qos: 0,
+            retain: false,
+            success: function (s) {
                 //document.getElementById("activity").innerHTML += "--> Success: you have published to the topic, "+document.getElementById("topic_sub").value+"<br>";
             },
-            error:function(e){
+            error: function (e) {
                 //document.getElementById("activity").innerHTML += "--> Error: something is wrong, "+e+"<br>";
                 //alert("err!! something is wrong. check the console")
                 console.log(e);
@@ -137,10 +136,10 @@ function publishMessage(){
     }
 }
 
-function listenESPTopic(){
-    if (subscribe == true){
-        cordova.plugins.CordovaMqTTPlugin.listen("espState/ESP1",function(payload,params){
-            if (payload == "1"){
+function listenESPTopic() {
+    if (subscribe == true) {
+        cordova.plugins.CordovaMqTTPlugin.listen("espState/ESP1", function (payload, params) {
+            if (payload == "1") {
                 // MAJ de l'UI pour ESP1
                 document.getElementById("esp1_state").checked = true;
             }
@@ -148,8 +147,8 @@ function listenESPTopic(){
                 document.getElementById("esp1_state").checked = false;
             }
         });
-        cordova.plugins.CordovaMqTTPlugin.listen("espState/ESP2",function(payload,params){
-            if (payload == "1"){
+        cordova.plugins.CordovaMqTTPlugin.listen("espState/ESP2", function (payload, params) {
+            if (payload == "1") {
                 // MAJ de l'UI pour ESP2
                 document.getElementById("esp2_state").checked = true;
             }
@@ -157,8 +156,8 @@ function listenESPTopic(){
                 document.getElementById("esp2_state").checked = false;
             }
         });
-        cordova.plugins.CordovaMqTTPlugin.listen("espState/ESP3",function(payload,params){
-            if (payload == "1"){
+        cordova.plugins.CordovaMqTTPlugin.listen("espState/ESP3", function (payload, params) {
+            if (payload == "1") {
                 // MAJ de l'UI pour ESP3
                 document.getElementById("esp3_state").checked = true;
             }
@@ -169,24 +168,24 @@ function listenESPTopic(){
     }
 }
 
-function subscribeESPTopic(){
+function subscribeESPTopic() {
     cordova.plugins.CordovaMqTTPlugin.subscribe({
-        topic:"espState/#",
-        qos:0,
-        success:function(s){
+        topic: "espState/#",
+        qos: 0,
+        success: function (s) {
             subscribe = true;
             listenESPTopic();
         },
-        error:function(e){
+        error: function (e) {
             alert("Can't subscribe to espState topic.");
         }
     });
 }
 
-function activateRelay1(){
-    if (!connect){
+function activateRelay1() {
+    if (!connect) {
         alert("First establish connection then try to publish")
-       // document.getElementById("esp1_state").checked = false;
+        // document.getElementById("esp1_state").checked = false;
     } else {
         if (relay1State == "1")
             myPayload = "2";
@@ -194,28 +193,28 @@ function activateRelay1(){
             myPayload = "1";
 
         cordova.plugins.CordovaMqTTPlugin.publish({
-            topic:"topic/lamp",
-            payload:myPayload,
-            qos:0,
-            retain:false,
-            success:function(s){
+            topic: "1floor/lamp",
+            payload: myPayload,
+            qos: 0,
+            retain: false,
+            success: function (s) {
                 if (relay1State == "1") {
                     relay1State = "2";
                     document.getElementById("esp1_state").checked = true;
                 } else {
                     relay1State = "1";
-                    document.getElementById("esp1_state").checked = true;
+                    document.getElementById("esp1_state").checked = false;
                 }
             },
-            error:function(e){
+            error: function (e) {
                 alert(e);
             }
         });
     }
 }
 
-function activateRelay2(){
-    if (!connect){
+function activateRelay2() {
+    if (!connect) {
         alert("First establish connection then try to publish")
         document.getElementById("esp2_state").checked = false;
     } else {
@@ -225,28 +224,28 @@ function activateRelay2(){
             myPayload = "1";
 
         cordova.plugins.CordovaMqTTPlugin.publish({
-            topic:"topic/lamp",
-            payload:myPayload,
-            qos:0,
-            retain:false,
-            success:function(s){
+            topic: "3floor/office",
+            payload: myPayload,
+            qos: 0,
+            retain: false,
+            success: function (s) {
                 if (relay2State == "1") {
                     relay2State = "2";
                     document.getElementById("esp2_state").checked = true;
                 } else {
                     relay2State = "1";
-                    document.getElementById("esp2_state").checked = true;
+                    document.getElementById("esp2_state").checked = false;
                 }
             },
-            error:function(e){
+            error: function (e) {
                 alert(e);
             }
         });
     }
 }
 
-function activateRelay3(){
-    if (!connect){
+function activateRelay3() {
+    if (!connect) {
         alert("First establish connection then try to publish")
         document.getElementById("esp3_state").checked = false;
     } else {
@@ -256,20 +255,20 @@ function activateRelay3(){
             myPayload = "1";
 
         cordova.plugins.CordovaMqTTPlugin.publish({
-            topic:"topic/lamp",
-            payload:myPayload,
-            qos:0,
-            retain:false,
-            success:function(s){
+            topic: "topic/lamp",
+            payload: myPayload,
+            qos: 0,
+            retain: false,
+            success: function (s) {
                 if (relay3State == "1") {
                     relay3State = "2";
                     document.getElementById("esp3_state").checked = true;
                 } else {
                     relay3State = "1";
-                    document.getElementById("esp3_state").checked = true;
+                    document.getElementById("esp3_state").checked = false;
                 }
             },
-            error:function(e){
+            error: function (e) {
                 alert(e);
             }
         });
@@ -277,35 +276,36 @@ function activateRelay3(){
 }
 
 /* SpeechRecognition */
-function startSpeechRecognition(){
-    if (connect == true){
+function startSpeechRecognition() {
+    if (connect == true) {
         window.plugins.speechRecognition.hasPermission(
-            function successCallback(hasPermission){
+            function successCallback(hasPermission) {
                 if (!hasPermission)
                     alert("You can't use speech recognition \n without grant permission.");
-            }, function errorCallback(err){
+            }, function errorCallback(err) {
                 alert(err);
             });
         window.plugins.speechRecognition.requestPermission(
-            function(){}, function (err){
+            function () {
+            }, function (err) {
                 alert("err");
             });
         var settings = {
             lang: "fr-FR",
             showPopup: true
         };
-        window.plugins.speechRecognition.startListening(function(result){
+        window.plugins.speechRecognition.startListening(function (result) {
             alert(result[0]);
             if (result.includes("allumer relais 1") || result.includes("allume la lampe")
-                || result.includes("allume le relais 1")){
+                || result.includes("allume le relais 1")) {
                 alert("result match");
                 activateRelay1();
             }
-        }, function(err){
+        }, function (err) {
             alert(err);
         }, settings);
     }
-    else{
+    else {
         alert("First establish connection then try to publish");
     }
 }
