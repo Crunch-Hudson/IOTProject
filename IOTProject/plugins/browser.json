@@ -15,6 +15,9 @@
     },
     "cordova-plugin-whitelist": {
       "PACKAGE_NAME": "com.app.mqtt"
+    },
+    "cordova-plugin-tts": {
+      "PACKAGE_NAME": "com.app.mqtt"
     }
   },
   "dependent_plugins": {}

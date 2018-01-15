@@ -23,6 +23,14 @@ module.exports = [
     "merges": [
       "window.plugins.speechRecognition"
     ]
+  },
+  {
+    "id": "cordova-plugin-tts.tts",
+    "file": "plugins/cordova-plugin-tts/www/tts.js",
+    "pluginId": "cordova-plugin-tts",
+    "clobbers": [
+      "TTS"
+    ]
   }
 ];
 module.exports.metadata = 
@@ -30,7 +38,8 @@ module.exports.metadata =
 {
   "cordova-plugin-whitelist": "1.3.3",
   "cordova-plugin-mqtt": "0.3.8",
-  "cordova-plugin-speechrecognition": "1.1.2"
+  "cordova-plugin-speechrecognition": "1.1.2",
+  "cordova-plugin-tts": "0.2.3"
 };
 // BOTTOM OF METADATA
 });

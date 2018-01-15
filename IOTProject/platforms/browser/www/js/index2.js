@@ -138,7 +138,7 @@ function publishMessage() {
 
 function listenESPTopic() {
     if (subscribe == true) {
-        cordova.plugins.CordovaMqTTPlugin.listen("espState/ESP1", function (payload, params) {
+        cordova.plugins.CordovaMqTTPlugin.listen("esp1State", function (payload, params) {
             if (payload == "1") {
                 // MAJ de l'UI pour ESP1
                 document.getElementById("esp1_state").checked = true;
@@ -147,7 +147,7 @@ function listenESPTopic() {
                 document.getElementById("esp1_state").checked = false;
             }
         });
-        cordova.plugins.CordovaMqTTPlugin.listen("espState/ESP2", function (payload, params) {
+        cordova.plugins.CordovaMqTTPlugin.listen("esp2State", function (payload, params) {
             if (payload == "1") {
                 // MAJ de l'UI pour ESP2
                 document.getElementById("esp2_state").checked = true;
@@ -156,7 +156,7 @@ function listenESPTopic() {
                 document.getElementById("esp2_state").checked = false;
             }
         });
-        cordova.plugins.CordovaMqTTPlugin.listen("espState/ESP3", function (payload, params) {
+        cordova.plugins.CordovaMqTTPlugin.listen("esp3State", function (payload, params) {
             if (payload == "1") {
                 // MAJ de l'UI pour ESP3
                 document.getElementById("esp3_state").checked = true;
@@ -168,9 +168,37 @@ function listenESPTopic() {
     }
 }
 
-function subscribeESPTopic() {
+function subscribeESP1() {
     cordova.plugins.CordovaMqTTPlugin.subscribe({
-        topic: "espState/#",
+        topic: "esp1State",
+        qos: 0,
+        success: function (s) {
+            subscribe = true;
+            listenESPTopic();
+        },
+        error: function (e) {
+            alert("Can't subscribe to espState topic.");
+        }
+    });
+}
+
+function subscribeESP2() {
+    cordova.plugins.CordovaMqTTPlugin.subscribe({
+        topic: "esp2State",
+        qos: 0,
+        success: function (s) {
+            subscribe = true;
+            listenESPTopic();
+        },
+        error: function (e) {
+            alert("Can't subscribe to espState topic.");
+        }
+    });
+}
+
+function subscribeESP3() {
+    cordova.plugins.CordovaMqTTPlugin.subscribe({
+        topic: "esp3State",
         qos: 0,
         success: function (s) {
             subscribe = true;

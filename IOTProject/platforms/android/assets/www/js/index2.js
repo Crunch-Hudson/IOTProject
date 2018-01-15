@@ -38,6 +38,7 @@ var app = {
                 test1.innerHTML = event.results[0][0].transcript;
             }
         };
+        alert('Pour une experience utilisateur optimale, augmentez le son de votre appareil.');
     },
     // Update DOM on a Received Event
     receivedEvent: function (id) {
@@ -54,7 +55,6 @@ var app = {
 
 /* Connection management */
 function startConnection() {
-    alert("touchend connect");
     if (document.getElementById("brokerAddress").value.substr(0, 6) != "tcp://")
         document.getElementById("brokerAddress").value = "tcp://" + document.getElementById("brokerAddress").value;
     window.cordova.plugins.CordovaMqTTPlugin.connect({
@@ -69,7 +69,10 @@ function startConnection() {
             brokerAddr = document.getElementById("brokerAddress").value;
             brokerPort = document.getElementById("port").value;
             document.getElementById("connectionState").value = "Connected";
-            alert("Connected !");
+            TTS.speak({
+                text: 'Vous êtes maintenant connecté',
+                locale: 'fr-FR',
+                rate: 1.0}, function(){}, function(reason){});
             //document.getElementById("activity").innerHTML += "--> Success: you are connected to, "+document.getElementById("url").value+":"+document.getElementById("port").value+"<br>"
         },
         error: function (e) {
@@ -78,7 +81,10 @@ function startConnection() {
             document.getElementById("Connect").style.display = "block";
             document.getElementById("Disconnect").style.display = "none";
             document.getElementById("connectionState").value = "Disconnected";
-            alert("err!! something is wrong. check the console")
+            TTS.speak({
+                text: 'Echec de la connection au serveur',
+                locale: 'fr-FR',
+                rate: 1.0}, function(){}, function(reason){});
             console.log(e);
         },
         onConnectionLost: function () {
@@ -88,7 +94,6 @@ function startConnection() {
             document.getElementById("Disconnect").style.display = "none";
         }
     });
-    alert("cordovaMqttPlugin connect end");
 }
 
 function endConnection() {
@@ -117,7 +122,10 @@ function endConnection() {
 /* MQTT function */
 function publishMessage() {
     if (!connect) {
-        alert("First establish connection then try to publish")
+        TTS.speak({
+            text: 'Vous devez être connecté au serveur pour utiliser cette fonctionnalité' ,
+            locale: 'fr-FR',
+            rate: 1.0}, function(){}, function(reason){});
     } else {
         cordova.plugins.CordovaMqTTPlugin.publish({
             topic: document.getElementById("topic").value,
@@ -138,7 +146,7 @@ function publishMessage() {
 
 function listenESPTopic() {
     if (subscribe == true) {
-        cordova.plugins.CordovaMqTTPlugin.listen("espState/ESP1", function (payload, params) {
+        cordova.plugins.CordovaMqTTPlugin.listen("esp1State", function (payload, params) {
             if (payload == "1") {
                 // MAJ de l'UI pour ESP1
                 document.getElementById("esp1_state").checked = true;
@@ -147,7 +155,7 @@ function listenESPTopic() {
                 document.getElementById("esp1_state").checked = false;
             }
         });
-        cordova.plugins.CordovaMqTTPlugin.listen("espState/ESP2", function (payload, params) {
+        cordova.plugins.CordovaMqTTPlugin.listen("esp2State", function (payload, params) {
             if (payload == "1") {
                 // MAJ de l'UI pour ESP2
                 document.getElementById("esp2_state").checked = true;
@@ -156,7 +164,7 @@ function listenESPTopic() {
                 document.getElementById("esp2_state").checked = false;
             }
         });
-        cordova.plugins.CordovaMqTTPlugin.listen("espState/ESP3", function (payload, params) {
+        cordova.plugins.CordovaMqTTPlugin.listen("esp3State", function (payload, params) {
             if (payload == "1") {
                 // MAJ de l'UI pour ESP3
                 document.getElementById("esp3_state").checked = true;
@@ -168,24 +176,64 @@ function listenESPTopic() {
     }
 }
 
-function subscribeESPTopic() {
+function subscribeESP1() {
     cordova.plugins.CordovaMqTTPlugin.subscribe({
-        topic: "espState/#",
+        topic: "esp1State",
         qos: 0,
         success: function (s) {
             subscribe = true;
             listenESPTopic();
         },
         error: function (e) {
-            alert("Can't subscribe to espState topic.");
+            TTS.speak({
+                text: 'Impossible de suivre ce topic',
+                locale: 'fr-FR',
+                rate: 1.0}, function(){}, function(reason){});
+        }
+    });
+}
+
+function subscribeESP2() {
+    cordova.plugins.CordovaMqTTPlugin.subscribe({
+        topic: "esp2State",
+        qos: 0,
+        success: function (s) {
+            subscribe = true;
+            listenESPTopic();
+        },
+        error: function (e) {
+            TTS.speak({
+                text: 'Impossible de suivre ce topic',
+                locale: 'fr-FR',
+                rate: 1.0}, function(){}, function(reason){});
+        }
+    });
+}
+
+function subscribeESP3() {
+    cordova.plugins.CordovaMqTTPlugin.subscribe({
+        topic: "esp3State",
+        qos: 0,
+        success: function (s) {
+            subscribe = true;
+            listenESPTopic();
+        },
+        error: function (e) {
+            TTS.speak({
+                text: 'Impossible de suivre ce topic',
+                locale: 'fr-FR',
+                rate: 1.0}, function(){}, function(reason){});
         }
     });
 }
 
 function activateRelay1() {
     if (!connect) {
-        alert("First establish connection then try to publish")
-        // document.getElementById("esp1_state").checked = false;
+        TTS.speak({
+            text: 'Vous devez être connecté au serveur pour utiliser cette fonctionnalité' ,
+            locale: 'fr-FR',
+            rate: 1.0}, function(){}, function(reason){});
+        document.getElementById("esp1_state").checked = false;
     } else {
         if (relay1State == "1")
             myPayload = "2";
@@ -215,7 +263,10 @@ function activateRelay1() {
 
 function activateRelay2() {
     if (!connect) {
-        alert("First establish connection then try to publish")
+        TTS.speak({
+            text: 'Vous devez être connecté au serveur pour utiliser cette fonctionnalité' ,
+            locale: 'fr-FR',
+            rate: 1.0}, function(){}, function(reason){});
         document.getElementById("esp2_state").checked = false;
     } else {
         if (relay2State == "1")
@@ -246,7 +297,10 @@ function activateRelay2() {
 
 function activateRelay3() {
     if (!connect) {
-        alert("First establish connection then try to publish")
+        TTS.speak({
+            text: 'Vous devez être connecté au serveur pour utiliser cette fonctionnalité' ,
+            locale: 'fr-FR',
+            rate: 1.0}, function(){}, function(reason){});
         document.getElementById("esp3_state").checked = false;
     } else {
         if (relay3State == "1")
@@ -281,7 +335,10 @@ function startSpeechRecognition() {
         window.plugins.speechRecognition.hasPermission(
             function successCallback(hasPermission) {
                 if (!hasPermission)
-                    alert("You can't use speech recognition \n without grant permission.");
+                    TTS.speak({
+                        text: 'Impossible d\'utiliser la reconnaissance vocale sans les autorisations d\'accès au microphone' ,
+                        locale: 'fr-FR',
+                        rate: 1.0}, function(){}, function(reason){});
             }, function errorCallback(err) {
                 alert(err);
             });
@@ -306,7 +363,10 @@ function startSpeechRecognition() {
         }, settings);
     }
     else {
-        alert("First establish connection then try to publish");
+        TTS.speak({
+            text: 'Vous devez être connecté au serveur pour utiliser cette fonctionnalité' ,
+            locale: 'fr-FR',
+            rate: 1.0}, function(){}, function(reason){});
     }
 }
 
