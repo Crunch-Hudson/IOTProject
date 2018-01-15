@@ -38,7 +38,6 @@ var app = {
                 test1.innerHTML = event.results[0][0].transcript;
             }
         };
-        alert('Pour une experience utilisateur optimale, augmentez le son de votre appareil.');
     },
     // Update DOM on a Received Event
     receivedEvent: function (id) {
@@ -69,10 +68,7 @@ function startConnection() {
             brokerAddr = document.getElementById("brokerAddress").value;
             brokerPort = document.getElementById("port").value;
             document.getElementById("connectionState").value = "Connected";
-            TTS.speak({
-                text: 'Vous êtes maintenant connecté',
-                locale: 'fr-FR',
-                rate: 1.0}, function(){}, function(reason){});
+            ttsSpeak('Vous êtes maintenant connecté');
             //document.getElementById("activity").innerHTML += "--> Success: you are connected to, "+document.getElementById("url").value+":"+document.getElementById("port").value+"<br>"
         },
         error: function (e) {
@@ -81,10 +77,7 @@ function startConnection() {
             document.getElementById("Connect").style.display = "block";
             document.getElementById("Disconnect").style.display = "none";
             document.getElementById("connectionState").value = "Disconnected";
-            TTS.speak({
-                text: 'Echec de la connection au serveur',
-                locale: 'fr-FR',
-                rate: 1.0}, function(){}, function(reason){});
+            ttsSpeak('Echec de la connection au serveur');
             console.log(e);
         },
         onConnectionLost: function () {
@@ -122,10 +115,7 @@ function endConnection() {
 /* MQTT function */
 function publishMessage() {
     if (!connect) {
-        TTS.speak({
-            text: 'Vous devez être connecté au serveur pour utiliser cette fonctionnalité' ,
-            locale: 'fr-FR',
-            rate: 1.0}, function(){}, function(reason){});
+        ttsSpeak('Vous devez être connecté au serveur pour utiliser cette fonctionnalité');
     } else {
         cordova.plugins.CordovaMqTTPlugin.publish({
             topic: document.getElementById("topic").value,
@@ -185,10 +175,7 @@ function subscribeESP1() {
             listenESPTopic();
         },
         error: function (e) {
-            TTS.speak({
-                text: 'Impossible de suivre ce topic',
-                locale: 'fr-FR',
-                rate: 1.0}, function(){}, function(reason){});
+            ttsSpeak('Impossible de suivre ce topic');
         }
     });
 }
@@ -202,10 +189,7 @@ function subscribeESP2() {
             listenESPTopic();
         },
         error: function (e) {
-            TTS.speak({
-                text: 'Impossible de suivre ce topic',
-                locale: 'fr-FR',
-                rate: 1.0}, function(){}, function(reason){});
+            ttsSpeak('Impossible de suivre ce topic');
         }
     });
 }
@@ -219,20 +203,14 @@ function subscribeESP3() {
             listenESPTopic();
         },
         error: function (e) {
-            TTS.speak({
-                text: 'Impossible de suivre ce topic',
-                locale: 'fr-FR',
-                rate: 1.0}, function(){}, function(reason){});
+            ttsSpeak('Impossible de suivre ce topic');
         }
     });
 }
 
 function activateRelay1() {
     if (!connect) {
-        TTS.speak({
-            text: 'Vous devez être connecté au serveur pour utiliser cette fonctionnalité' ,
-            locale: 'fr-FR',
-            rate: 1.0}, function(){}, function(reason){});
+        ttsSpeak('Vous devez être connecté au serveur pour utiliser cette fonctionnalité');
         document.getElementById("esp1_state").checked = false;
     } else {
         if (relay1State == "1")
@@ -248,9 +226,11 @@ function activateRelay1() {
             success: function (s) {
                 if (relay1State == "1") {
                     relay1State = "2";
+                    ttsSpeak('La lampe du salon est maintenant allumée');
                     document.getElementById("esp1_state").checked = true;
                 } else {
                     relay1State = "1";
+                    ttsSpeak('La lampe du salon est maintenant éteinte');
                     document.getElementById("esp1_state").checked = false;
                 }
             },
@@ -263,10 +243,7 @@ function activateRelay1() {
 
 function activateRelay2() {
     if (!connect) {
-        TTS.speak({
-            text: 'Vous devez être connecté au serveur pour utiliser cette fonctionnalité' ,
-            locale: 'fr-FR',
-            rate: 1.0}, function(){}, function(reason){});
+        ttsSpeak('Vous devez être connecté au serveur pour utiliser cette fonctionnalité');
         document.getElementById("esp2_state").checked = false;
     } else {
         if (relay2State == "1")
@@ -282,9 +259,11 @@ function activateRelay2() {
             success: function (s) {
                 if (relay2State == "1") {
                     relay2State = "2";
+                    ttsSpeak('L\'éclairage du bureau est maintenant allumé');
                     document.getElementById("esp2_state").checked = true;
                 } else {
                     relay2State = "1";
+                    ttsSpeak('L\'éclairage du bureau est maintenant éteint');
                     document.getElementById("esp2_state").checked = false;
                 }
             },
@@ -297,10 +276,7 @@ function activateRelay2() {
 
 function activateRelay3() {
     if (!connect) {
-        TTS.speak({
-            text: 'Vous devez être connecté au serveur pour utiliser cette fonctionnalité' ,
-            locale: 'fr-FR',
-            rate: 1.0}, function(){}, function(reason){});
+        ttsSpeak('Vous devez être connecté au serveur pour utiliser cette fonctionnalité');
         document.getElementById("esp3_state").checked = false;
     } else {
         if (relay3State == "1")
@@ -316,9 +292,11 @@ function activateRelay3() {
             success: function (s) {
                 if (relay3State == "1") {
                     relay3State = "2";
+                    ttsSpeak('Le troisième relais est maintenant actif');
                     document.getElementById("esp3_state").checked = true;
                 } else {
                     relay3State = "1";
+                    ttsSpeak('Le troisième relais est maintenant éteint');
                     document.getElementById("esp3_state").checked = false;
                 }
             },
@@ -329,16 +307,20 @@ function activateRelay3() {
     }
 }
 
-/* SpeechRecognition */
+/* Vocal function */
+function ttsSpeak(message){
+    TTS.speak({
+        text: message ,
+        locale: 'fr-FR',
+        rate: 1.0}, function(){}, function(reason){});
+}
+
 function startSpeechRecognition() {
     if (connect == true) {
         window.plugins.speechRecognition.hasPermission(
             function successCallback(hasPermission) {
                 if (!hasPermission)
-                    TTS.speak({
-                        text: 'Impossible d\'utiliser la reconnaissance vocale sans les autorisations d\'accès au microphone' ,
-                        locale: 'fr-FR',
-                        rate: 1.0}, function(){}, function(reason){});
+                    ttsSpeak('Impossible d\'utiliser la reconnaissance vocale sans les autorisations d\'accès au microphone');
             }, function errorCallback(err) {
                 alert(err);
             });
@@ -353,22 +335,24 @@ function startSpeechRecognition() {
         };
         window.plugins.speechRecognition.startListening(function (result) {
             alert(result[0]);
-            if (result.includes("allumer relais 1") || result.includes("allume la lampe")
-                || result.includes("allume le relais 1")) {
-                alert("result match");
+            if (result.includes("Allumer la lampe du salon") ||
+                result.includes("Allumer lampe salon") ||
+                result.includes("Active le relais un")) {
+                ttsSpeak('Bien compris, j\'allume la lampe du salon');
                 activateRelay1();
+            } else if (result.includes("Allumer éclairage du bureau") ||
+                       result.includes("Allume le bureau") ||
+                       result.includes("Active le relais trois")){
+                ttsSpeak('Bien compris, j\'allume la lampe du bureau');
+                activateRelay2();
             }
         }, function (err) {
             alert(err);
         }, settings);
     }
     else {
-        TTS.speak({
-            text: 'Vous devez être connecté au serveur pour utiliser cette fonctionnalité' ,
-            locale: 'fr-FR',
-            rate: 1.0}, function(){}, function(reason){});
+        ttsSpeak('Vous devez être connecté au serveur pour utiliser cette fonctionnalité');
     }
 }
-
 
 app.initialize();
