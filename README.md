@@ -60,6 +60,7 @@ cordova build
 | ESP8266            |  X   |           
 | Node-Red           |  X   |              
 | Speech Recognition |      |
+| Text-to-Speech     |  X   |
 
 
 ## License
