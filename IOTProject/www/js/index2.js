@@ -38,6 +38,11 @@ var app = {
                 test1.innerHTML = event.results[0][0].transcript;
             }
         };
+        // brokerAddr = window.localStorage.getItem("brokerAddress");
+        // brokerPort = window.localStorage.getItem("port");
+        // alert(brokerAddr+" "+brokerPort);
+        // document.getElementById("brokerAddress").value = brokerAddr ? brokerAddr : "";
+        // document.getElementById("port").value = brokerPort ? brokerPort : "";
     },
     // Update DOM on a Received Event
     receivedEvent: function (id) {
@@ -69,7 +74,8 @@ function startConnection() {
             brokerPort = document.getElementById("port").value;
             document.getElementById("connectionState").value = "Connected";
             ttsSpeak('Vous êtes maintenant connecté');
-            //document.getElementById("activity").innerHTML += "--> Success: you are connected to, "+document.getElementById("url").value+":"+document.getElementById("port").value+"<br>"
+            window.localStorage.setItem("brokerAddress", document.getElementById("brokerAddress").value);
+            window.localStorage.setItem("port", document.getElementById("port").value);
         },
         error: function (e) {
             connect = false;
