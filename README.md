@@ -34,14 +34,14 @@ https://www.jetbrains.com/webstorm/
 Clonez le projet et ouvrez le dans votre IDE.
 Les sources se trouvent dans le dossier :
 ```
-PathToProject\IOTProject2\mqqt\www
+PathToProject\IOTProject\www
 ```
 
 ## Deployment
 
 Pour générer une .apk lancez la commande suivante dans le répertoire du projet :
 ```
-cordova build
+cordova build android
 ```
 
 ## Built With
