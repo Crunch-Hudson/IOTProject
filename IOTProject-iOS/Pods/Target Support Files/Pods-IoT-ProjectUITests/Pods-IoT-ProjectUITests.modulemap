@@ -1,0 +1,6 @@
+framework module Pods_IoT_ProjectUITests {
+  umbrella header "Pods-IoT-ProjectUITests-umbrella.h"
+
+  export *
+  module * { export * }
+}
