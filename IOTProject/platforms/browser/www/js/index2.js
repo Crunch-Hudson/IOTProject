@@ -1,6 +1,17 @@
 /*
 index.js
 */
+/**
+ * TODO : Quand volet roulant installé
+ *         -> Mettre à jour l'ESP8266 de la lampe du salon
+ *            pour emettre/recevoir des messages sur le topic
+ *            1floor/shutterEngine
+ *         -> Monter un shield double relais 5V pour piloter le moteur
+ *         -> MAJ du javascript de l'appli pour prendre en compte les modifications
+ *         -> MAJ de l'UI, trouver un widget capable de représenter la commande du volet
+ *         -> Scénario NodeRed pour programmation d'ouverture/fermeture automatique du volet ?
+ **/
+
 var connect = false;
 var relay1State = "1";
 var relay2State = "1";
@@ -38,6 +49,11 @@ var app = {
                 test1.innerHTML = event.results[0][0].transcript;
             }
         };
+        // brokerAddr = window.localStorage.getItem("brokerAddress");
+        // brokerPort = window.localStorage.getItem("port");
+        // alert(brokerAddr+" "+brokerPort);
+        // document.getElementById("brokerAddress").value = brokerAddr ? brokerAddr : "";
+        // document.getElementById("port").value = brokerPort ? brokerPort : "";
     },
     // Update DOM on a Received Event
     receivedEvent: function (id) {
@@ -54,7 +70,6 @@ var app = {
 
 /* Connection management */
 function startConnection() {
-    alert("touchend connect");
     if (document.getElementById("brokerAddress").value.substr(0, 6) != "tcp://")
         document.getElementById("brokerAddress").value = "tcp://" + document.getElementById("brokerAddress").value;
     window.cordova.plugins.CordovaMqTTPlugin.connect({
@@ -69,8 +84,9 @@ function startConnection() {
             brokerAddr = document.getElementById("brokerAddress").value;
             brokerPort = document.getElementById("port").value;
             document.getElementById("connectionState").value = "Connected";
-            alert("Connected !");
-            //document.getElementById("activity").innerHTML += "--> Success: you are connected to, "+document.getElementById("url").value+":"+document.getElementById("port").value+"<br>"
+            ttsSpeak('Vous êtes maintenant connecté');
+            window.localStorage.setItem("brokerAddress", document.getElementById("brokerAddress").value);
+            window.localStorage.setItem("port", document.getElementById("port").value);
         },
         error: function (e) {
             connect = false;
@@ -78,7 +94,7 @@ function startConnection() {
             document.getElementById("Connect").style.display = "block";
             document.getElementById("Disconnect").style.display = "none";
             document.getElementById("connectionState").value = "Disconnected";
-            alert("err!! something is wrong. check the console")
+            ttsSpeak('Echec de la connection au serveur');
             console.log(e);
         },
         onConnectionLost: function () {
@@ -88,9 +104,7 @@ function startConnection() {
             document.getElementById("Disconnect").style.display = "none";
         }
     });
-    alert("cordovaMqttPlugin connect end");
 }
-
 function endConnection() {
     document.getElementById("Connect").style.display = "block";
     document.getElementById("Disconnect").style.display = "none";
@@ -113,11 +127,12 @@ function endConnection() {
         }
     });
 }
+/**/
 
 /* MQTT function */
 function publishMessage() {
     if (!connect) {
-        alert("First establish connection then try to publish")
+        ttsSpeak('Vous devez être connecté au serveur pour utiliser cette fonctionnalité');
     } else {
         cordova.plugins.CordovaMqTTPlugin.publish({
             topic: document.getElementById("topic").value,
@@ -135,7 +150,6 @@ function publishMessage() {
         });
     }
 }
-
 function listenESPTopic() {
     if (subscribe == true) {
         cordova.plugins.CordovaMqTTPlugin.listen("esp1State", function (payload, params) {
@@ -167,7 +181,6 @@ function listenESPTopic() {
         });
     }
 }
-
 function subscribeESP1() {
     cordova.plugins.CordovaMqTTPlugin.subscribe({
         topic: "esp1State",
@@ -177,11 +190,10 @@ function subscribeESP1() {
             listenESPTopic();
         },
         error: function (e) {
-            alert("Can't subscribe to espState topic.");
+            ttsSpeak('Impossible de suivre ce topic');
         }
     });
 }
-
 function subscribeESP2() {
     cordova.plugins.CordovaMqTTPlugin.subscribe({
         topic: "esp2State",
@@ -191,11 +203,10 @@ function subscribeESP2() {
             listenESPTopic();
         },
         error: function (e) {
-            alert("Can't subscribe to espState topic.");
+            ttsSpeak('Impossible de suivre ce topic');
         }
     });
 }
-
 function subscribeESP3() {
     cordova.plugins.CordovaMqTTPlugin.subscribe({
         topic: "esp3State",
@@ -205,15 +216,17 @@ function subscribeESP3() {
             listenESPTopic();
         },
         error: function (e) {
-            alert("Can't subscribe to espState topic.");
+            ttsSpeak('Impossible de suivre ce topic');
         }
     });
 }
+/**/
 
+/* Nearly deprecated */
 function activateRelay1() {
     if (!connect) {
-        alert("First establish connection then try to publish")
-        // document.getElementById("esp1_state").checked = false;
+        ttsSpeak('Vous devez être connecté au serveur pour utiliser cette fonctionnalité');
+        document.getElementById("esp1_state").checked = false;
     } else {
         if (relay1State == "1")
             myPayload = "2";
@@ -221,15 +234,146 @@ function activateRelay1() {
             myPayload = "1";
 
         cordova.plugins.CordovaMqTTPlugin.publish({
-            topic: "1floor/lamp",
+            topic: "1floor/shutterEngineUp",
             payload: myPayload,
             qos: 0,
             retain: false,
             success: function (s) {
                 if (relay1State == "1") {
                     relay1State = "2";
+                    ttsSpeak('Bien compris, jouvre le volet du salon');
                     document.getElementById("esp1_state").checked = true;
                 } else {
+                    relay1State = "1";
+                    ttsSpeak('Bien compris, je ferme le volet du salon');
+                    document.getElementById("esp1_state").checked = false;
+                }
+            },
+            error: function (e) {
+                alert(e);
+            }
+        });
+    }
+}
+function activateRelay2() {
+    if (!connect) {
+        ttsSpeak('Vous devez être connecté au serveur pour utiliser cette fonctionnalité');
+        document.getElementById("esp2_state").checked = false;
+    } else {
+        if (relay2State == "1")
+            myPayload = "2";
+        else
+            myPayload = "1";
+
+        cordova.plugins.CordovaMqTTPlugin.publish({
+            topic: "1floor/shutterEngineDown",
+            payload: myPayload,
+            qos: 0,
+            retain: false,
+            success: function (s) {
+                if (relay2State == "1") {
+                    relay2State = "2";
+                    ttsSpeak('Bien compris, je ferme le volet du salon');
+                    document.getElementById("esp2_state").checked = true;
+                } else {
+                    relay2State = "1";
+                    ttsSpeak('L\'éclairage du bureau est maintenant éteint');
+                    document.getElementById("esp2_state").checked = false;
+                }
+            },
+            error: function (e) {
+                alert(e);
+            }
+        });
+    }
+}
+function activateRelay3() {
+    if (!connect) {
+        ttsSpeak('Vous devez être connecté au serveur pour utiliser cette fonctionnalité');
+        document.getElementById("esp3_state").checked = false;
+    } else {
+        if (relay3State == "1")
+            myPayload = "2";
+        else
+            myPayload = "1";
+
+        cordova.plugins.CordovaMqTTPlugin.publish({
+            topic: "1floor/shutterEngine",
+            payload: myPayload,
+            qos: 0,
+            retain: false,
+            success: function (s) {
+                if (relay3State == "1") {
+                    relay3State = "2";
+                    ttsSpeak('Le troisième relais est maintenant actif');
+                    document.getElementById("esp3_state").checked = true;
+                } else {
+                    relay3State = "1";
+                    ttsSpeak('Le troisième relais est maintenant éteint');
+                    document.getElementById("esp3_state").checked = false;
+                }
+            },
+            error: function (e) {
+                alert(e);
+            }
+        });
+    }
+}
+/**/
+
+/* Use this instead */
+function activateRelay(relayNb){
+    if (!connect) {
+        ttsSpeak('Vous devez être connecté au serveur pour utiliser cette fonctionnalité');
+        document.getElementById("esp1_state").checked = false;
+    } else {
+            myPayload = "2";
+
+            cordova.plugins.CordovaMqTTPlugin.publish({
+            topic: relayNb,
+            payload: myPayload,
+            qos: 0,
+            retain: false,
+            success: function (s) {
+
+                 if (relayNb == "3floor/office"){
+                    relay3State = "2";
+                    document.getElementById("esp2_state").checked = true;
+                } else if (relayNb == "1floor/shutterEngineUp"){
+                    relay2State = "2";
+                    document.getElementById("esp3_state").checked = true;
+                } else if (relayNb == "1floor/shutterEngineDown"){
+                    relay1State = "2";
+                    document.getElementById("esp1_state").checked = true;
+                }
+            },
+            error: function (e) {
+                alert(e);
+            }
+        });
+    }
+}
+function deactivateRelay(relayNb){
+    if (!connect) {
+        ttsSpeak('Vous devez être connecté au serveur pour utiliser cette fonctionnalité');
+        document.getElementById("esp1_state").checked = false;
+    } else {
+        myPayload = "1";
+
+        cordova.plugins.CordovaMqTTPlugin.publish({
+            topic: relayNb,
+            payload: myPayload,
+            qos: 0,
+            retain: false,
+            success: function (s) {
+
+                 if (relayNb == "3floor/office"){
+                    relay3State = "1";
+                    document.getElementById("esp2_state").checked = false;
+                } else if (relayNb == "1floor/shutterEngineUp"){
+                    relay2State = "1";
+                    document.getElementById("esp3_state").checked = false;
+                } else if (relayNb == "1floor/shutterEngineDown"){
                     relay1State = "1";
                     document.getElementById("esp1_state").checked = false;
                 }
@@ -240,76 +384,22 @@ function activateRelay1() {
         });
     }
 }
+/**/
 
-function activateRelay2() {
-    if (!connect) {
-        alert("First establish connection then try to publish")
-        document.getElementById("esp2_state").checked = false;
-    } else {
-        if (relay2State == "1")
-            myPayload = "2";
-        else
-            myPayload = "1";
-
-        cordova.plugins.CordovaMqTTPlugin.publish({
-            topic: "3floor/office",
-            payload: myPayload,
-            qos: 0,
-            retain: false,
-            success: function (s) {
-                if (relay2State == "1") {
-                    relay2State = "2";
-                    document.getElementById("esp2_state").checked = true;
-                } else {
-                    relay2State = "1";
-                    document.getElementById("esp2_state").checked = false;
-                }
-            },
-            error: function (e) {
-                alert(e);
-            }
-        });
-    }
+/* Vocal function */
+function ttsSpeak(message){
+    TTS.speak({
+        text: message ,
+        locale: 'fr-FR',
+        rate: 1.0}, function(){}, function(reason){});
 }
-
-function activateRelay3() {
-    if (!connect) {
-        alert("First establish connection then try to publish")
-        document.getElementById("esp3_state").checked = false;
-    } else {
-        if (relay3State == "1")
-            myPayload = "2";
-        else
-            myPayload = "1";
-
-        cordova.plugins.CordovaMqTTPlugin.publish({
-            topic: "topic/lamp",
-            payload: myPayload,
-            qos: 0,
-            retain: false,
-            success: function (s) {
-                if (relay3State == "1") {
-                    relay3State = "2";
-                    document.getElementById("esp3_state").checked = true;
-                } else {
-                    relay3State = "1";
-                    document.getElementById("esp3_state").checked = false;
-                }
-            },
-            error: function (e) {
-                alert(e);
-            }
-        });
-    }
-}
-
-/* SpeechRecognition */
 function startSpeechRecognition() {
+    var relayNb = "";
     if (connect == true) {
         window.plugins.speechRecognition.hasPermission(
             function successCallback(hasPermission) {
                 if (!hasPermission)
-                    alert("You can't use speech recognition \n without grant permission.");
+                    ttsSpeak('Impossible d\'utiliser la reconnaissance vocale sans les autorisations d\'accès au microphone');
             }, function errorCallback(err) {
                 alert(err);
             });
@@ -323,20 +413,52 @@ function startSpeechRecognition() {
             showPopup: true
         };
         window.plugins.speechRecognition.startListening(function (result) {
-            alert(result[0]);
-            if (result.includes("allumer relais 1") || result.includes("allume la lampe")
-                || result.includes("allume le relais 1")) {
-                alert("result match");
-                activateRelay1();
+            if (result[0] == "allumer la lampe du salon" ||
+                result[0]== "allume la lampe du salon" ||
+                result[0] == "active le relais un") {
+                ttsSpeak('Bien compris, j\'allume la lampe du salon');
+                relayNb = "1floor/lamp";
+            } else if (result[0] == "allumer éclairage du bureau" ||
+                       result[0] == "allume le bureau" ||
+                       result[0] == "active le relais trois"){
+                ttsSpeak('Bien compris, j\'allume la lampe du bureau');
+                relayNb = "3floor/office";
             }
+            if (relayNb != "")
+                activateRelay(relayNb);
+            relayNb = "";
         }, function (err) {
             alert(err);
         }, settings);
     }
     else {
-        alert("First establish connection then try to publish");
+        ttsSpeak('Vous devez être connecté au serveur pour utiliser cette fonctionnalité');
+    }
+}
+/**/
+
+/* Test */
+function mDown(obj, type) {
+    if (!connect) {
+        ttsSpeak('Vous devez être connecté au serveur pour utiliser cette fonctionnalité');
+    } else {
+        obj.style.backgroundColor = "#00cc00";
+        if (type == 1){
+            deactivateRelay("1floor/shutterEngineDown");
+            activateRelay("1floor/shutterEngineUp");
+        } else {
+            deactivateRelay("1floor/shutterEngineUp");
+            activateRelay("1floor/shutterEngineDown");
+        }
     }
 }
 
+function mUp(obj, type) {
+    obj.style.backgroundColor="#CC0000";
+    if (type == 1)
+        deactivateRelay("1floor/shutterEngineUp")
+    else
+        deactivateRelay("1floor/shutterEngineDown")
+}
 
 app.initialize();

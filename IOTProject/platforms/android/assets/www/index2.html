@@ -43,13 +43,19 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 					<div class="clear"></div>
 					<div class="agile-tb">
 						<div class="tab-1 resp-tab-content" aria-labelledby="tab_item-0"><!--Monitoring-->
-							<label for="esp1_state">1st Floor : Lamp</label><br>
-							<label class="switch"><input id="esp1_state" name="esp1_state" type="checkbox" onchange="activateRelay1()"><span class="slider"></span>"</label>
+							<label for="esp1_state">1st Floor : Shutter Up</label><br>
+							<!--<label class="switch"><input id="esp1_state" name="esp1_state" type="checkbox" onchange="activateRelay1()"><span class="slider"></span>"</label>-->
+							<div ontouchstart="mDown(this, 1)" ontouchend="mUp(this, 1)"
+								 style="background-color:#CC0000;width:70px;height:34px;margin-left:36%;" class="button" type="submit" id="esp1_state">
+							</div>
 							<br>
-							<label for="esp2_state">3rd Floor : Office</label><br>
-							<label class="switch"><input id="esp2_state" name="esp2_state" type="checkbox" onchange="activateRelay2()"><span class="slider"></span>"</label>
+							<label for="esp2_state">1st Floor : Shutter Down</label><br>
+							<div ontouchstart="mDown(this, 2)" ontouchend="mUp(this, 2)"
+								 style="background-color:#CC0000;width:70px;height:34px;margin-left: 36%"  class="button" type="submit" id="esp2_state">
+							</div>
+							<!--<label class="switch"><input id="esp2_state" name="esp2_state" type="checkbox" onchange="activateRelay2()"><span class="slider"></span>"</label>-->
 							<br>
-							<label for="esp3_state">ESP3 state</label><br>
+							<label for="esp3_state">3rd Floor : Office</label><br>
 							<label class="switch"><input id="esp3_state" name="esp3_state" type="checkbox" onchange="activateRelay3()"><span class="slider"></span>"</label>
 							<br>
 							<button type="submit" id="speechRecognition" class="button" onclick="startSpeechRecognition()">Speech Recognition</button>

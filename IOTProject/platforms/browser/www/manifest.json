@@ -1,11 +1,17 @@
 {
   "background_color": "#FFF",
   "display": "standalone",
-  "name": "MQTT Test",
-  "short_name": "MQTT Test",
+  "name": "IOTProject",
+  "short_name": "IOTProject",
   "version": "com.app.mqtt",
-  "description": "A sample Apache Cordova application that responds to the deviceready event.",
-  "author": "Apache Cordova Team",
-  "icons": [],
+  "description": "A simple android application to manage IOT.",
+  "author": "5 crédits please Team.",
+  "icons": [
+    {
+      "src": "www/img/logo.png",
+      "type": "image/png",
+      "sizes": "undefinedxundefined"
+    }
+  ],
   "start_url": "index2.html"
 }
