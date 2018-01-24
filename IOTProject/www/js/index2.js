@@ -3,11 +3,8 @@ index.js
 */
 /**
  * TODO : Quand volet roulant installé
- *         -> Mettre à jour l'ESP8266 de la lampe du salon
- *            pour emettre/recevoir des messages sur le topic
- *            1floor/shutterEngine
- *         -> MAJ du javascript de l'appli pour prendre en compte les modifications
  *         -> Scénario NodeRed pour programmation d'ouverture/fermeture automatique du volet ?
+ * TODO : Local storage pour stocker les informations du broker MQTT
  **/
 
 var connect = false;
@@ -429,7 +426,7 @@ function startSpeechRecognition() {
 }
 /**/
 
-/* Test */
+/* HTML Callback */
 function mDown(obj, type) {
     if (!connect) {
         ttsSpeak('Vous devez être connecté au serveur pour utiliser cette fonctionnalité');
@@ -444,7 +441,6 @@ function mDown(obj, type) {
         }
     }
 }
-
 function mUp(obj, type) {
     obj.style.backgroundColor="#CC0000";
     if (type == 1)
@@ -452,5 +448,6 @@ function mUp(obj, type) {
     else
         deactivateRelay("1floor/shutterEngineDown")
 }
+/**/
 
 app.initialize();
