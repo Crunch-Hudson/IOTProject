@@ -6,9 +6,7 @@ index.js
  *         -> Mettre à jour l'ESP8266 de la lampe du salon
  *            pour emettre/recevoir des messages sur le topic
  *            1floor/shutterEngine
- *         -> Monter un shield double relais 5V pour piloter le moteur
  *         -> MAJ du javascript de l'appli pour prendre en compte les modifications
- *         -> MAJ de l'UI, trouver un widget capable de représenter la commande du volet
  *         -> Scénario NodeRed pour programmation d'ouverture/fermeture automatique du volet ?
  **/
 
@@ -444,10 +442,10 @@ function mDown(obj, type) {
     } else {
         obj.style.backgroundColor = "#00cc00";
         if (type == 1){
-            deactivateRelay("1floor/shutterEngineDown");
+            //deactivateRelay("1floor/shutterEngineDown");
             activateRelay("1floor/shutterEngineUp");
         } else {
-            deactivateRelay("1floor/shutterEngineUp");
+            //deactivateRelay("1floor/shutterEngineUp");
             activateRelay("1floor/shutterEngineDown");
         }
     }
