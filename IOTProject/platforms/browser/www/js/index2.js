@@ -3,11 +3,8 @@ index.js
 */
 /**
  * TODO : Quand volet roulant installé
- *         -> Mettre à jour l'ESP8266 de la lampe du salon
- *            pour emettre/recevoir des messages sur le topic
- *            1floor/shutterEngine
- *         -> MAJ du javascript de l'appli pour prendre en compte les modifications
  *         -> Scénario NodeRed pour programmation d'ouverture/fermeture automatique du volet ?
+ * TODO : Local storage pour stocker les informations du broker MQTT
  **/
 
 var connect = false;
@@ -323,7 +320,6 @@ function activateRelay3() {
 function activateRelay(relayNb){
     if (!connect) {
         ttsSpeak('Vous devez être connecté au serveur pour utiliser cette fonctionnalité');
-        document.getElementById("esp1_state").checked = false;
     } else {
             myPayload = "2";
 
@@ -339,10 +335,8 @@ function activateRelay(relayNb){
                     document.getElementById("esp2_state").checked = true;
                 } else if (relayNb == "1floor/shutterEngineUp"){
                     relay2State = "2";
-                    document.getElementById("esp3_state").checked = true;
                 } else if (relayNb == "1floor/shutterEngineDown"){
                     relay1State = "2";
-                    document.getElementById("esp1_state").checked = true;
                 }
             },
             error: function (e) {
@@ -354,7 +348,6 @@ function activateRelay(relayNb){
 function deactivateRelay(relayNb){
     if (!connect) {
         ttsSpeak('Vous devez être connecté au serveur pour utiliser cette fonctionnalité');
-        document.getElementById("esp1_state").checked = false;
     } else {
         myPayload = "1";
 
@@ -370,10 +363,8 @@ function deactivateRelay(relayNb){
                     document.getElementById("esp2_state").checked = false;
                 } else if (relayNb == "1floor/shutterEngineUp"){
                     relay2State = "1";
-                    document.getElementById("esp3_state").checked = false;
                 } else if (relayNb == "1floor/shutterEngineDown"){
                     relay1State = "1";
-                    document.getElementById("esp1_state").checked = false;
                 }
             },
             error: function (e) {
@@ -411,16 +402,16 @@ function startSpeechRecognition() {
             showPopup: true
         };
         window.plugins.speechRecognition.startListening(function (result) {
-            if (result[0] == "allumer la lampe du salon" ||
-                result[0]== "allume la lampe du salon" ||
-                result[0] == "active le relais un") {
-                ttsSpeak('Bien compris, j\'allume la lampe du salon');
-                relayNb = "1floor/lamp";
-            } else if (result[0] == "allumer éclairage du bureau" ||
-                       result[0] == "allume le bureau" ||
-                       result[0] == "active le relais trois"){
-                ttsSpeak('Bien compris, j\'allume la lampe du bureau');
-                relayNb = "3floor/office";
+            if (result[0] == "fermer le volet" ||
+                result[0]== "ferme le volet" ||
+                result[0] == "ferme volet") {
+                ttsSpeak('Bien compris, je ferme le volet');
+                relayNb = "1floor/shutterEngineDown";
+            } else if (result[0] == "ouvrir le volet" ||
+                result[0]== "ouvre le volet" ||
+                result[0] == "ouvre volet"){
+                ttsSpeak('Bien compris, j\'ouvre le volet');
+                relayNb = "1floor/shutterEngineUp";
             }
             if (relayNb != "")
                 activateRelay(relayNb);
@@ -435,7 +426,7 @@ function startSpeechRecognition() {
 }
 /**/
 
-/* Test */
+/* HTML Callback */
 function mDown(obj, type) {
     if (!connect) {
         ttsSpeak('Vous devez être connecté au serveur pour utiliser cette fonctionnalité');
@@ -450,7 +441,6 @@ function mDown(obj, type) {
         }
     }
 }
-
 function mUp(obj, type) {
     obj.style.backgroundColor="#CC0000";
     if (type == 1)
@@ -458,5 +448,6 @@ function mUp(obj, type) {
     else
         deactivateRelay("1floor/shutterEngineDown")
 }
+/**/
 
 app.initialize();
