@@ -10,41 +10,57 @@ import UIKit
 
 class ViewController: UIViewController {
 
-    @IBOutlet weak var switchButton: UISwitch!
+    @IBOutlet weak var stopButton: UIButton!
     @IBOutlet weak var closeButton: UIButton!
     @IBOutlet weak var openButton: UIButton!
     override func viewDidLoad() {
         super.viewDidLoad()
         MQTTManager.shared.connect()
         
+        openButton.backgroundColor = .red
+        closeButton.backgroundColor = .red
+        stopButton.backgroundColor = .red
         // Do any additional setup after loading the view, typically from a nib.
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
+
 
     @IBAction func openClicked(_ sender: Any) {
+        MQTTManager.shared.voletUPOff()
+        openButton.backgroundColor = .red
         print("openClicked")
     }
     
-    @IBAction func closeClicked(_ sender: Any) {
-        print("closeClicked")
+    @IBAction func openTouchDown(_ sender: Any) {
+        print("openTouchDown")
+        openButton.backgroundColor = .green
+        MQTTManager.shared.voletUP()
     }
     
-    @IBAction func switchClicked(_ sender: Any) {
-        switchButton.isOn ? print("switchClicked ON") : print("switchClicked OFF")
-        switchEnabled(on: switchButton.isOn)
+    @IBAction func openStopClicked(_ sender: Any) {
+        closeButton.backgroundColor = .red
+        MQTTManager.shared.voletDOWNOff()
+        MQTTManager.shared.voletUPOff()
+        openButton.backgroundColor = .red
+        print("openStopClicked")
+    }
+    
+    
+    
+    @IBAction func closeClicked(_ sender: Any) {
+        print("closeClicked")
+         MQTTManager.shared.voletDOWNOff()
+        closeButton.backgroundColor = .red
+    }
+  
+    @IBAction func closeTouchDown(_ sender: Any) {
+        closeButton.backgroundColor = .green
+        MQTTManager.shared.voletDOWN()
+        print("closeTouchDown")
     }
 
-    func switchEnabled(on: Bool) {
-        if on {
-            
-        } else {
-            
-        }
-    }
+    
+
     
     
 }
